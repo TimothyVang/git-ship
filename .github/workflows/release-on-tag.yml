@@ -1,0 +1,36 @@
+# Release-on-tag for GitHub Actions, driven by git-ship.
+#
+# COST: FREE on public repositories (standard-runner minutes are unlimited there).
+# On private repos it consumes only the minutes for this one short step
+# (checkout + one push/release call — typically well under a minute).
+#
+# TRIGGER: fires whenever a tag matching `v*` is pushed, e.g.
+#   git tag v1.2.0 && git push origin v1.2.0
+#
+# This repo IS the action, so it dogfoods itself via `uses: ./`. Consumers can
+# either reference the published action (`uses: TimothyVang/git-ship@v1`) or
+# vendor `git-ship` and call `bash git-ship --tag "$GITHUB_REF_NAME"` directly.
+
+name: release-on-tag
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write          # git-ship creates a release object, which writes repo content
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history + tags so release-note generation has commits
+
+      - name: Ship release
+        uses: ./
+        with:
+          tag: ${{ github.ref_name }}

@@ -1,0 +1,69 @@
+name: "git-ship"
+description: "Free, platform-agnostic push + release. Pushes a branch and cuts a release on GitHub/GitLab/any host."
+branding:
+  icon: "anchor"
+  color: "blue"
+
+inputs:
+  tag:
+    description: "Tag to create + release (e.g. v1.2.0). Omit to only push the branch."
+    required: false
+  remote:
+    description: "Git remote to push to."
+    required: false
+    default: "origin"
+  branch:
+    description: "Branch to push (default: current branch)."
+    required: false
+  platform:
+    description: "Force github|gitlab|gitea|generic (default: auto-detect from the remote URL)."
+    required: false
+  notes:
+    description: "Release notes text. Defaults to auto-generated notes where supported."
+    required: false
+  notes-file:
+    description: "Path to a file containing release notes."
+    required: false
+  no-push:
+    description: "Skip the branch push (release only). 'true' or 'false'."
+    required: false
+    default: "false"
+  dry-run:
+    description: "Print every action and change nothing. 'true' or 'false'."
+    required: false
+    default: "false"
+  github-token:
+    description: "Token for the GitHub release (CLI + REST fallback). Defaults to the workflow token."
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: git-ship
+      shell: bash
+      env:
+        # git-ship reads GH_TOKEN for both the gh CLI and the REST API fallback.
+        GH_TOKEN: ${{ inputs.github-token }}
+        GS_TAG: ${{ inputs.tag }}
+        GS_REMOTE: ${{ inputs.remote }}
+        GS_BRANCH: ${{ inputs.branch }}
+        GS_PLATFORM: ${{ inputs.platform }}
+        GS_NOTES: ${{ inputs.notes }}
+        GS_NOTES_FILE: ${{ inputs.notes-file }}
+        GS_NO_PUSH: ${{ inputs.no-push }}
+        GS_DRY_RUN: ${{ inputs.dry-run }}
+      run: |
+        set -euo pipefail
+        # Build the arg list from env (never interpolate ${{ inputs }} into the
+        # script body — keeps untrusted input out of the shell command line).
+        args=()
+        [ -n "${GS_REMOTE:-}" ]     && args+=(--remote     "$GS_REMOTE")
+        [ -n "${GS_BRANCH:-}" ]     && args+=(--branch     "$GS_BRANCH")
+        [ -n "${GS_PLATFORM:-}" ]   && args+=(--platform   "$GS_PLATFORM")
+        [ -n "${GS_TAG:-}" ]        && args+=(--tag        "$GS_TAG")
+        [ -n "${GS_NOTES:-}" ]      && args+=(--notes      "$GS_NOTES")
+        [ -n "${GS_NOTES_FILE:-}" ] && args+=(--notes-file "$GS_NOTES_FILE")
+        [ "${GS_NO_PUSH:-false}" = "true" ] && args+=(--no-push)
+        [ "${GS_DRY_RUN:-false}" = "true" ] && args+=(--dry-run)
+        bash "$GITHUB_ACTION_PATH/git-ship" "${args[@]}"

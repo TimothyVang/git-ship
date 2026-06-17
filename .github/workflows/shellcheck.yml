@@ -1,0 +1,15 @@
+# Lint the git-ship script on every push / PR. Keeps the one file we ship clean.
+name: shellcheck
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run shellcheck
+        run: shellcheck git-ship

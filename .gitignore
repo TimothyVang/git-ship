@@ -1,0 +1,4 @@
+# Nothing to build — git-ship is a single script. Keep editor/OS noise out.
+*.swp
+*~
+.DS_Store

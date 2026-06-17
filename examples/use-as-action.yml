@@ -1,0 +1,29 @@
+# Example: cut a GitHub release from a pushed tag, using git-ship as an action.
+# Copy this into a consumer repo at .github/workflows/release.yml.
+
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write            # required — git-ship creates the release object
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0     # full history so auto-generated notes have commits
+
+      - uses: TimothyVang/git-ship@v1
+        with:
+          tag: ${{ github.ref_name }}
+          # Optional inputs:
+          # remote: origin
+          # notes: "Hand-written release notes."
+          # dry-run: "true"
+          # github-token: ${{ secrets.GITHUB_TOKEN }}   # defaults to the workflow token
