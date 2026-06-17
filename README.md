@@ -14,6 +14,9 @@ git ship                 # push the current branch to origin
 git ship --tag v1.2.0    # push + cut a v1.2.0 release
 ```
 
+> On **Windows**, use the PowerShell one-liner instead — see [Install](#install). git-ship runs as a
+> `git ship` subcommand there too (Git for Windows bundles the Bash that runs it).
+
 It's a single ~190-line Bash script with no dependencies beyond `git`, `curl`, and `python3` (the
 last only for JSON-encoding release notes on the API fallback path). Drop it on your `PATH` and it
 also works as a native `git` subcommand (`git ship …`).
@@ -33,26 +36,43 @@ Most "push and release" flows are tied to one host's CLI or burn billed CI minut
 
 ## Install
 
-**One-liner** — downloads the script onto your PATH (also enables the `git ship` subcommand):
+### macOS / Linux
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/TimothyVang/git-ship/main/install.sh | bash
 ```
 
-The installer drops `git-ship` on your PATH and — if that location isn't already on PATH — adds it
-to your shell profile (open a new terminal afterward), so `git ship …` just works even if you've
-never set up a CLI before. Flags: `bash -s -- --dir=/usr/local/bin` to choose the location,
-`--ref=v1.0.0` to pin a version, `--no-modify-path` to skip the profile edit. Prefer to read before
-you run? Fetch `…/install.sh` and inspect it first — it's a short, dependency-free shell script.
+Drops `git-ship` on your PATH and — if that location isn't already on PATH — adds it to your shell
+profile (open a new terminal afterward), so `git ship …` works even if you've never set up a CLI
+before. Flags: `bash -s -- --dir=/usr/local/bin`, `--ref=v1.0.0`, `--no-modify-path`. It's a short,
+dependency-free shell script — inspect it first if you like.
 
-**Manual** — it's a single file, nothing else:
+### Windows (PowerShell)
+
+```powershell
+irm https://raw.githubusercontent.com/TimothyVang/git-ship/main/install.ps1 | iex
+```
+
+To pass options or read it before running:
+
+```powershell
+iwr https://raw.githubusercontent.com/TimothyVang/git-ship/main/install.ps1 -OutFile install.ps1
+powershell -ExecutionPolicy Bypass -File .\install.ps1     # add -Dir / -NoModifyPath as needed
+```
+
+git-ship is a Bash script, and **Git for Windows bundles the Bash that runs it**, so `git ship …`
+works as a git subcommand from PowerShell, cmd, or Git Bash. Install
+**[GitHub CLI](https://cli.github.com)** and run `gh auth login` so releases work without git-ship's
+`python3` fallback (Git Bash doesn't bundle python3). On **WSL**, use the macOS/Linux one-liner.
+
+### Manual (any OS) — it's a single file
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/TimothyVang/git-ship/main/git-ship -o ~/.local/bin/git-ship
 chmod +x ~/.local/bin/git-ship
 ```
 
-**Vendor into a repo** so CI can call it without a network fetch:
+### Vendor into a repo so CI can call it without a network fetch
 
 ```bash
 cp git-ship scripts/git-ship && chmod +x scripts/git-ship
