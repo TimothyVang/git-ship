@@ -74,5 +74,5 @@ esac
 
 echo
 ok "ready. Try it:"
-echo "    git ship --help            # (or: git-ship --help)"
+echo "    git-ship --help            # all options  (note: 'git ship --help' is hijacked by git's man pages; use the hyphen, or 'git ship -h')"
 echo "    git ship --tag v1.0.0      # push current branch + cut a release"
