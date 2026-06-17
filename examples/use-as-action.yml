@@ -19,7 +19,7 @@ jobs:
         with:
           fetch-depth: 0     # full history so auto-generated notes have commits
 
-      - uses: TimothyVang/git-ship@v1
+      - uses: TimothyVang/git-ship@main   # or pin a tag once you cut one, e.g. @v1.0.0
         with:
           tag: ${{ github.ref_name }}
           # Optional inputs:

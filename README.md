@@ -6,6 +6,10 @@ release — on **GitHub, GitLab, or any git host** — using plain `git` plus th
 runners, no service, no lock-in.**
 
 ```bash
+# 1. install — drops git-ship on your PATH (also enables the `git ship` subcommand)
+curl -fsSL https://raw.githubusercontent.com/TimothyVang/git-ship/main/install.sh | bash
+
+# 2. ship
 git ship                 # push the current branch to origin
 git ship --tag v1.2.0    # push + cut a v1.2.0 release
 ```
@@ -29,14 +33,28 @@ Most "push and release" flows are tied to one host's CLI or burn billed CI minut
 
 ## Install
 
+**One-liner** — downloads the script onto your PATH (also enables the `git ship` subcommand):
+
 ```bash
-# Put it on your PATH (also enables the `git ship` subcommand form)
+curl -fsSL https://raw.githubusercontent.com/TimothyVang/git-ship/main/install.sh | bash
+```
+
+Pick the location with `bash -s -- --dir=/usr/local/bin`, or pin a version with `--ref=v1.0.0`.
+Prefer to read before you run? Fetch `…/install.sh` and inspect it first — it's a short,
+dependency-free shell script that just downloads one file and `chmod +x`es it.
+
+**Manual** — it's a single file, nothing else:
+
+```bash
 curl -fsSL https://raw.githubusercontent.com/TimothyVang/git-ship/main/git-ship -o ~/.local/bin/git-ship
 chmod +x ~/.local/bin/git-ship
 ```
 
-Or vendor it into a repo (`cp git-ship scripts/git-ship && chmod +x scripts/git-ship`) so CI can call
-it without a network fetch.
+**Vendor into a repo** so CI can call it without a network fetch:
+
+```bash
+cp git-ship scripts/git-ship && chmod +x scripts/git-ship
+```
 
 ## Usage
 
@@ -97,7 +115,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }   # full history for auto-generated notes
-      - uses: TimothyVang/git-ship@v1
+      - uses: TimothyVang/git-ship@main   # or pin a tag once you cut one, e.g. @v1.0.0
         with:
           tag: ${{ github.ref_name }}
 ```
