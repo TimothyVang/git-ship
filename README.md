@@ -39,9 +39,11 @@ Most "push and release" flows are tied to one host's CLI or burn billed CI minut
 curl -fsSL https://raw.githubusercontent.com/TimothyVang/git-ship/main/install.sh | bash
 ```
 
-Pick the location with `bash -s -- --dir=/usr/local/bin`, or pin a version with `--ref=v1.0.0`.
-Prefer to read before you run? Fetch `…/install.sh` and inspect it first — it's a short,
-dependency-free shell script that just downloads one file and `chmod +x`es it.
+The installer drops `git-ship` on your PATH and — if that location isn't already on PATH — adds it
+to your shell profile (open a new terminal afterward), so `git ship …` just works even if you've
+never set up a CLI before. Flags: `bash -s -- --dir=/usr/local/bin` to choose the location,
+`--ref=v1.0.0` to pin a version, `--no-modify-path` to skip the profile edit. Prefer to read before
+you run? Fetch `…/install.sh` and inspect it first — it's a short, dependency-free shell script.
 
 **Manual** — it's a single file, nothing else:
 
